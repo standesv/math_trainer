@@ -102,13 +102,10 @@ els.installBtn.addEventListener("click", async () => {
   els.installBtn.hidden = true;
 });
 
-if ("serviceWorker" in navigator) {
-  window.addEventListener("load", () => navigator.serviceWorker.register("./sw.js"));
-}
-
+// (V11) Service worker disabled to avoid stale cache during debugging
 // ---------- Storage ----------
-const PROFILES_KEY = "math_trainer_profiles_v10";
-const ACTIVE_PROFILE_KEY = "math_trainer_active_profile_v10";
+const PROFILES_KEY = "math_trainer_profiles_v11";
+const ACTIVE_PROFILE_KEY = "math_trainer_active_profile_v11";
 const HISTORY_MAX = 12;
 
 const LEVEL_STEP = 10;
@@ -116,8 +113,8 @@ const LEVEL_MAX_CAP = 200;
 const PASS_SCORE_MIN = 80;
 const PASS_MIN_QUESTIONS = 10;
 
-function historyKeyFor(profile) { return `math_trainer_history_v10::${profile}`; }
-function progressKeyFor(profile) { return `math_trainer_progress_v10::${profile}`; }
+function historyKeyFor(profile) { return `math_trainer_history_v11::${profile}`; }
+function progressKeyFor(profile) { return `math_trainer_progress_v11::${profile}`; }
 
 // ---------- Helpers ----------
 function clampInt(v, min, max) {
@@ -542,7 +539,7 @@ function startGame() {
 function nextQuestion() {
   state.locked = false;
   state.currentIndex += 1;
-  if (state.currentIndex >= config.totalQuestions) return finishGame();
+  if (state.currentIndex >= config.totalQuestions) { return finishGame(); }
   state.current = state.questions[state.currentIndex];
   renderCurrentQuestion();
 }
@@ -572,10 +569,11 @@ function validateAnswer() {
   }
 
   const isLast = (state.currentIndex === config.totalQuestions - 1);
-  scheduleAfterAnswer(isLast ? 650 : 520, isLast ? finishGame : nextQuestion);
   if (isLast) {
-    // Watchdog: if something prevented transition, force it
-    scheduleAfterAnswer(1200, () => { try { if (currentScreen === "game") finishGame(); } catch (e) { try { finishGame(); } catch {} } });
+    // Finish immediately (after a tiny paint) so we never stay on the last question
+    scheduleAfterAnswer(10, finishGame);
+  } else {
+    scheduleAfterAnswer(520, nextQuestion);
   }
 }
 
@@ -589,9 +587,10 @@ function skipQuestion() {
   safeCall(() => soundWrong());
 
   const isLast = (state.currentIndex === config.totalQuestions - 1);
-  scheduleAfterAnswer(isLast ? 520 : 420, isLast ? finishGame : nextQuestion);
   if (isLast) {
-    scheduleAfterAnswer(1100, () => { try { if (currentScreen === "game") finishGame(); } catch (e) { try { finishGame(); } catch {} } });
+    scheduleAfterAnswer(10, finishGame);
+  } else {
+    scheduleAfterAnswer(420, nextQuestion);
   }
 }
 
@@ -606,6 +605,7 @@ function stopGameNow() {
     const q = state.questions[i];
     if (q.correct === null) { q.skipped = true; q.correct = false; }
   }
+  // force finish
   finishGame();
 }
 
