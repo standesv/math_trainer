@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#0b5cff" />
+  <meta name="description" content="Entraînement aux additions et soustractions - 10 questions par partie" />
+
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="stylesheet" href="styles.css" />
+
+  <title>Math Trainer</title>
+</head>
+
+<body>
+  <header class="app-header">
+    <div class="brand">
+      <div class="logo" aria-hidden="true">±</div>
+      <div>
+        <h1>Math Trainer</h1>
+        <p class="subtitle">Additions & soustractions — 10 questions</p>
+      </div>
+    </div>
+    <button id="installBtn" class="btn btn-ghost" hidden>Installer</button>
+  </header>
+
+  <main class="container">
+    <!-- Écran: Accueil / Paramètres -->
+    <section id="screen-home" class="card">
+      <h2>Nouvelle partie</h2>
+
+      <div class="grid">
+        <div class="field">
+          <label>Mode</label>
+          <div class="segmented" role="group" aria-label="Mode">
+            <button type="button" class="seg active" data-mode="mix">Mix</button>
+            <button type="button" class="seg" data-mode="add">Addition</button>
+            <button type="button" class="seg" data-mode="sub">Soustraction</button>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="maxValue">Niveau (0 → max)</label>
+          <input id="maxValue" type="number" min="5" max="200" step="1" value="20" />
+          <small>Ex: max = 20 ⇒ opérations entre 0 et 20</small>
+        </div>
+
+        <div class="field">
+          <label for="allowNegative">
+            <input id="allowNegative" type="checkbox" />
+            Autoriser des résultats négatifs (soustraction)
+          </label>
+          <small>Sinon, on génère des soustractions avec résultat ≥ 0</small>
+        </div>
+
+        <div class="field">
+          <label for="questionsCount">Nombre de questions</label>
+          <input id="questionsCount" type="number" min="5" max="50" step="1" value="10" />
+        </div>
+      </div>
+
+      <div class="actions">
+        <button id="startBtn" class="btn btn-primary">Lancer la partie</button>
+        <button id="resetHistoryBtn" class="btn btn-ghost">Effacer l’historique</button>
+      </div>
+    </section>
+
+    <!-- Écran: Jeu -->
+    <section id="screen-game" class="card" hidden>
+      <div class="row-between">
+        <div>
+          <h2>Question <span id="qIndex">1</span>/<span id="qTotal">10</span></h2>
+          <p class="muted">Réponds puis valide.</p>
+        </div>
+        <div class="pill">
+          ✅ <span id="okCount">0</span> &nbsp;|&nbsp; ❌ <span id="errCount">0</span>
+        </div>
+      </div>
+
+      <div class="problem" aria-live="polite">
+        <span id="a">0</span>
+        <span id="op">+</span>
+        <span id="b">0</span>
+        <span class="eq">=</span>
+        <span class="box">
+          <input id="answerInput" inputmode="numeric" autocomplete="off" />
+        </span>
+      </div>
+
+      <div class="feedback" id="feedback" aria-live="polite"></div>
+
+      <div class="actions">
+        <button id="validateBtn" class="btn btn-primary">Valider</button>
+        <button id="skipBtn" class="btn btn-ghost">Passer</button>
+        <button id="stopBtn" class="btn btn-danger">Arrêter</button>
+      </div>
+    </section>
+
+    <!-- Écran: Résultats -->
+    <section id="screen-results" class="card" hidden>
+      <h2>Résultat</h2>
+
+      <div class="summary">
+        <div class="metric">
+          <div class="metric-label">Réussites</div>
+          <div class="metric-value" id="finalOk">0</div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">Erreurs</div>
+          <div class="metric-value" id="finalErr">0</div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">Score</div>
+          <div class="metric-value" id="finalScore">0%</div>
+        </div>
+      </div>
+
+      <details class="details">
+        <summary>Voir le corrigé (questions + bonnes réponses)</summary>
+        <div id="reviewList" class="review"></div>
+      </details>
+
+      <div class="actions">
+        <button id="playAgainBtn" class="btn btn-primary">Rejouer</button>
+        <button id="backHomeBtn" class="btn btn-ghost">Retour accueil</button>
+      </div>
+    </section>
+
+    <!-- Historique -->
+    <section class="card">
+      <div class="row-between">
+        <h2>Derniers résultats</h2>
+        <span class="muted" id="historyHint">Stocké sur cet appareil</span>
+      </div>
+
+      <div class="table-wrap">
+        <table class="table" aria-label="Historique des parties">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Mode</th>
+              <th>Niveau</th>
+              <th>Questions</th>
+              <th>✅</th>
+              <th>❌</th>
+              <th>Score</th>
+            </tr>
+          </thead>
+          <tbody id="historyBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <footer class="footer muted">
+      Offline OK ✅ — Installe l’app via le bouton “Installer” si ton navigateur le propose.
+    </footer>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
