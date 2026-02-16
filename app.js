@@ -16,6 +16,7 @@ const els = {
   // header
   subtitle: $("#subtitle"),
   installBtn: $("#installBtn"),
+  appMain: $("#appMain"),
 
   // home
   profileSelect: $("#profileSelect"),
@@ -106,8 +107,8 @@ if ("serviceWorker" in navigator) {
 }
 
 // ---------- Storage ----------
-const PROFILES_KEY = "math_trainer_profiles_v6";
-const ACTIVE_PROFILE_KEY = "math_trainer_active_profile_v6";
+const PROFILES_KEY = "math_trainer_profiles_v8";
+const ACTIVE_PROFILE_KEY = "math_trainer_active_profile_v8";
 const HISTORY_MAX = 12;
 
 const LEVEL_STEP = 10;
@@ -115,8 +116,8 @@ const LEVEL_MAX_CAP = 200;
 const PASS_SCORE_MIN = 80;
 const PASS_MIN_QUESTIONS = 10;
 
-function historyKeyFor(profile) { return `math_trainer_history_v6::${profile}`; }
-function progressKeyFor(profile) { return `math_trainer_progress_v6::${profile}`; }
+function historyKeyFor(profile) { return `math_trainer_history_v8::${profile}`; }
+function progressKeyFor(profile) { return `math_trainer_progress_v8::${profile}`; }
 
 // ---------- Helpers ----------
 function clampInt(v, min, max) {
@@ -146,6 +147,13 @@ let currentScreen = "home";
 function showScreen(name) {
   Object.entries(screens).forEach(([k, el]) => { el.hidden = (k !== name); });
   currentScreen = name;
+  // reset scroll (important on mobile)
+  if (els.appMain) els.appMain.scrollTop = 0;
+  // close settings if open
+  if (els.settingsModal && els.settingsModal.classList.contains('open')) {
+    els.settingsModal.classList.remove('open');
+    els.settingsModal.setAttribute('aria-hidden', 'true');
+  }
 
   // nav highlight
   els.navButtons.forEach(b => b.classList.remove("active"));
@@ -480,6 +488,7 @@ let state = {
   ok: 0,
   questions: [],
   current: null,
+  locked: false,
 };
 
 function renderCurrentQuestion() {
@@ -504,7 +513,7 @@ function startGame() {
   readSettingsIntoConfig();
   ensureAudio();
 
-  state = { currentIndex: 0, ok: 0, questions: [], current: null };
+  state = { currentIndex: 0, ok: 0, questions: [], current: null, locked: false };
 
   const useTables = (config.mode === "tables") || !!els.tablesEnabled.checked;
   for (let i = 0; i < config.totalQuestions; i++) {
@@ -518,6 +527,7 @@ function startGame() {
 }
 
 function nextQuestion() {
+  state.locked = false;
   state.currentIndex += 1;
   if (state.currentIndex >= config.totalQuestions) return finishGame();
   state.current = state.questions[state.currentIndex];
@@ -525,11 +535,13 @@ function nextQuestion() {
 }
 
 function validateAnswer() {
+  if (state.locked) return;
   const raw = els.answerInput.value.trim().replace(",", ".");
   if (!raw) { els.feedback.textContent = "Entre une réponse 🙂"; return; }
   const user = Number(raw);
   if (Number.isNaN(user)) { els.feedback.textContent = "Réponse invalide."; return; }
 
+  state.locked = true;
   const expected = state.current.answer;
   state.current.userAnswer = user;
   const correct = (user === expected);
@@ -544,19 +556,31 @@ function validateAnswer() {
     els.feedback.textContent = `❌ C’était ${expected}`;
     soundWrong();
   }
-  setTimeout(nextQuestion, 520);
+  if (state.currentIndex === config.totalQuestions - 1) {
+    setTimeout(finishGame, 600);
+  } else {
+    setTimeout(nextQuestion, 520);
+  }
 }
 
 function skipQuestion() {
+  if (state.locked) return;
+  state.locked = true;
   state.current.skipped = true;
   state.current.userAnswer = null;
   state.current.correct = false;
   els.feedback.textContent = `⏭️ Réponse : ${state.current.answer}`;
   soundWrong();
-  setTimeout(nextQuestion, 420);
+  if (state.currentIndex === config.totalQuestions - 1) {
+    setTimeout(finishGame, 500);
+  } else {
+    setTimeout(nextQuestion, 420);
+  }
 }
 
 function stopGameNow() {
+  if (state.locked) return;
+  state.locked = true;
   if (state.current && state.current.userAnswer === null) {
     state.current.skipped = true;
     state.current.correct = false;
@@ -643,6 +667,7 @@ function maybeUnlockNextLevel({ score, total }) {
 }
 
 function finishGame() {
+  state.locked = false;
   stopTimer();
 
   const total = config.totalQuestions;
@@ -761,3 +786,9 @@ els.backHomeBtn.addEventListener("click", () => showScreen("home"));
 // init
 renderScores();
 showScreen("home");
+
+
+// Safety: avoid "blocked" state on unexpected errors
+window.addEventListener("error", () => {
+  try { state.locked = false; } catch {}
+});
