@@ -107,8 +107,8 @@ if ("serviceWorker" in navigator) {
 }
 
 // ---------- Storage ----------
-const PROFILES_KEY = "math_trainer_profiles_v9";
-const ACTIVE_PROFILE_KEY = "math_trainer_active_profile_v9";
+const PROFILES_KEY = "math_trainer_profiles_v10";
+const ACTIVE_PROFILE_KEY = "math_trainer_active_profile_v10";
 const HISTORY_MAX = 12;
 
 const LEVEL_STEP = 10;
@@ -116,8 +116,8 @@ const LEVEL_MAX_CAP = 200;
 const PASS_SCORE_MIN = 80;
 const PASS_MIN_QUESTIONS = 10;
 
-function historyKeyFor(profile) { return `math_trainer_history_v9::${profile}`; }
-function progressKeyFor(profile) { return `math_trainer_progress_v9::${profile}`; }
+function historyKeyFor(profile) { return `math_trainer_history_v10::${profile}`; }
+function progressKeyFor(profile) { return `math_trainer_progress_v10::${profile}`; }
 
 // ---------- Helpers ----------
 function clampInt(v, min, max) {
@@ -513,6 +513,11 @@ function renderCurrentQuestion() {
 
   els.answerInput.value = "";
   els.feedback.textContent = "";
+  // Update validate label on last question
+  try {
+    const isLastQ = (state.currentIndex === config.totalQuestions - 1);
+    els.validateBtn.textContent = isLastQ ? "🏁 Terminer" : "✅ Valider";
+  } catch (e) {}
   // focus with tiny delay for iOS reliability
   setTimeout(() => els.answerInput.focus(), 50);
 }
@@ -568,6 +573,10 @@ function validateAnswer() {
 
   const isLast = (state.currentIndex === config.totalQuestions - 1);
   scheduleAfterAnswer(isLast ? 650 : 520, isLast ? finishGame : nextQuestion);
+  if (isLast) {
+    // Watchdog: if something prevented transition, force it
+    scheduleAfterAnswer(1200, () => { try { if (currentScreen === "game") finishGame(); } catch (e) { try { finishGame(); } catch {} } });
+  }
 }
 
 function skipQuestion() {
@@ -581,6 +590,9 @@ function skipQuestion() {
 
   const isLast = (state.currentIndex === config.totalQuestions - 1);
   scheduleAfterAnswer(isLast ? 520 : 420, isLast ? finishGame : nextQuestion);
+  if (isLast) {
+    scheduleAfterAnswer(1100, () => { try { if (currentScreen === "game") finishGame(); } catch (e) { try { finishGame(); } catch {} } });
+  }
 }
 
 function stopGameNow() {
@@ -672,8 +684,10 @@ function maybeUnlockNextLevel({ score, total }) {
 }
 
 function finishGame() {
+  // Always navigate to Results, even if a rendering error happens
   state.locked = false;
-  stopTimer();
+  try { stopTimer(); } catch (e) {}
+  try { showScreen("results"); } catch (e) {}
 
   const total = config.totalQuestions;
   const ok = state.ok;
@@ -684,16 +698,20 @@ function finishGame() {
   els.finalErr.textContent = String(err);
   els.finalScore.textContent = `${score}%`;
 
-  // review
-  els.reviewList.innerHTML = "";
-  state.questions.forEach((q, idx) => {
+  // review (safe)
+  try {
+    els.reviewList.innerHTML = "";
+    state.questions.forEach((q, idx) => {
     const left = `${idx + 1}. ${q.a} ${q.op} ${q.b} = ${q.userAnswer === null ? "…" : q.userAnswer}`;
     const right = `→ ${q.answer}`;
     const item = document.createElement("div");
     item.className = `item ${q.correct ? "ok" : "err"}`;
     item.innerHTML = `<span>${escapeHtml(left)}</span><span class="right">${escapeHtml(right)}</span>`;
-    els.reviewList.appendChild(item);
-  });
+      els.reviewList.appendChild(item);
+    });
+  } catch (e) {
+    try { els.reviewList.innerHTML = "<div class=\"muted\">Corrigé indisponible.</div>"; } catch {}
+  }
 
   const timeSec = Math.round(elapsedMs / 1000);
   const avg = total > 0 ? (elapsedMs / 1000 / total) : 0;
@@ -720,7 +738,7 @@ function finishGame() {
 
   els.timeSummary.textContent = `👤 ${activeProfile} — ⏱️ ${timeSec}s — ${avg.toFixed(1)}s/question`;
 
-  showScreen("results");
+  // already on results screen
 
   if (config.confettiEnabled && total >= PASS_MIN_QUESTIONS && score >= PASS_SCORE_MIN) {
     spawnConfetti({ count: 140, x: window.innerWidth / 2, y: window.innerHeight / 4, spread: 160, power: 11 });
