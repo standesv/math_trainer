@@ -1,0 +1,448 @@
+:root{
+  --bg:#0b1220;
+  --card:#0f1a31;
+  --text:#eaf0ff;
+  --muted:#a8b3d6;
+  --primary:#0b5cff;
+  --primary2:#0a4ad1;
+  --danger:#d94a4a;
+  --border:rgba(255,255,255,.12);
+  --shadow: 0 12px 40px rgba(0,0,0,.35);
+  --radius:20px;
+  --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+
+  /* Bottom nav height (bigger for kids) */
+  --navH: 84px;
+
+  /* Global type scaling for phones & tablets */
+  --base: clamp(16px, 2.15vw, 20px);
+  --h1: clamp(18px, 2.6vw, 24px);
+  --h2: clamp(18px, 2.6vw, 26px);
+  --btn: clamp(18px, 2.7vw, 24px);
+  --ico: clamp(22px, 3.4vw, 30px);
+}
+
+*{box-sizing:border-box}
+html,body{height:100%}
+
+body{
+  margin:0;
+  font-family:var(--sans);
+  font-size: var(--base);
+  color:var(--text);
+  background:
+    radial-gradient(1200px 600px at 20% 0%, rgba(11,92,255,.22), transparent 60%),
+    radial-gradient(900px 500px at 90% 10%, rgba(217,74,74,.12), transparent 60%),
+    var(--bg);
+  min-height: 100dvh;
+  overflow: hidden; /* avoid browser zoom/scroll artifacts */
+}
+
+.app-shell{
+  min-height: 100dvh;
+  display:flex;
+  flex-direction:column;
+}
+
+/* In installed mode, we can truly fill the screen */
+@media (display-mode: standalone) {
+  body{ min-height:100vh; }
+}
+
+.app-header{
+  padding: calc(12px + env(safe-area-inset-top)) 14px 8px 14px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  max-width: 1100px;
+  width:100%;
+  margin:0 auto;
+  flex: 0 0 auto;
+}
+.brand{display:flex; align-items:center; gap:12px}
+.logo{
+  width:48px; height:48px; border-radius:16px;
+  display:grid; place-items:center;
+  background: linear-gradient(135deg, rgba(11,92,255,.95), rgba(10,74,209,.75));
+  box-shadow: var(--shadow);
+  font-weight:1000;
+  font-size:24px;
+}
+h1{margin:0; font-size: var(--h1)}
+.subtitle{margin:2px 0 0 0; color:var(--muted); font-size: clamp(12px, 1.9vw, 14px)}
+
+/* Main uses remaining height between header and bottom nav */
+.app-main{
+  max-width:1100px;
+  width:100%;
+  margin:0 auto;
+  padding: 10px 14px 0 14px;
+  flex: 1 1 auto;
+  min-height: 0;             /* important for flex children */
+  overflow: auto;            /* allow internal scroll if needed */
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: calc(var(--navH) + 16px + env(safe-area-inset-bottom));
+}
+
+.screen{
+  min-height: calc(100dvh - 72px - var(--navH) - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+  display:flex;
+}
+.card{
+  width:100%;
+  background: rgba(15,26,49,.90);
+  border:1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: clamp(14px, 2vw, 20px);
+  display:flex;
+  flex-direction:column;
+  gap: 12px;
+}
+.card-grow{flex:1}
+.spacer{flex:1}
+.tip{line-height:1.25}
+
+/* Controls */
+.field label{display:block; font-size: clamp(14px, 2.1vw, 16px); font-weight:1000}
+.field small{display:block; margin-top:6px; color:var(--muted); font-size: clamp(12px, 1.9vw, 14px)}
+.row{display:flex; gap:12px; align-items:center}
+
+.input{
+  width:100%;
+  margin-top:8px;
+  padding: 14px 14px;
+  border-radius:16px;
+  border:1px solid var(--border);
+  background: rgba(0,0,0,.20);
+  color:var(--text);
+  outline:none;
+  font-size: 18px; /* stops iOS zoom + comfortable */
+}
+
+.check{
+  display:flex;
+  gap:12px;
+  align-items:center;
+  color: var(--muted);
+  font-weight:1000;
+}
+.check input{transform: scale(1.15)}
+
+.segmented{
+  margin-top:10px;
+  display:flex;
+  border:1px solid var(--border);
+  background: rgba(0,0,0,.18);
+  border-radius: 18px;
+  overflow:hidden;
+}
+.seg{
+  flex:1;
+  padding: 16px 10px;
+  background: transparent;
+  border:0;
+  color: var(--muted);
+  cursor:pointer;
+  font-weight:1100;
+  font-size: clamp(18px, 2.6vw, 24px);
+  touch-action: manipulation;
+}
+.seg.active{
+  background: rgba(11,92,255,.25);
+  color: var(--text);
+}
+
+.row-between{display:flex; align-items:flex-start; justify-content:space-between; gap:12px}
+.row-tight{margin-top:8px}
+
+.pill{
+  border:1px solid var(--border);
+  border-radius:999px;
+  padding:10px 14px;
+  color: var(--muted);
+  font-weight:1100;
+  font-size: clamp(13px, 2vw, 15px);
+  background: rgba(0,0,0,.14);
+}
+.pill-mono{font-family: var(--mono);}
+
+.btn{
+  border:1px solid var(--border);
+  border-radius: 18px;
+  padding: 14px 16px;
+  font-weight:1100;
+  cursor:pointer;
+  background: rgba(0,0,0,.18);
+  color: var(--text);
+  font-size: var(--btn);
+  touch-action: manipulation;
+}
+.btn-primary{
+  background: linear-gradient(135deg, var(--primary), var(--primary2));
+  border-color: rgba(11,92,255,.45);
+}
+.btn-danger{
+  background: rgba(217,74,74,.20);
+  border-color: rgba(217,74,74,.40);
+}
+.btn-ghost{background: rgba(0,0,0,.10); color: var(--muted)}
+.btn:active{transform: translateY(1px)}
+.btn-icon{width:56px; height:56px; padding:0; display:grid; place-items:center; border-radius:16px; font-size: 26px}
+.btn-xxl{width:100%; padding: 18px 18px; font-size: clamp(20px, 3vw, 28px)}
+
+/* Problem */
+.problem{
+  margin-top: 6px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap: 12px;
+  font-family: var(--mono);
+  font-size: clamp(44px, 8vw, 76px);
+  padding: clamp(16px, 3vw, 24px);
+  border-radius: var(--radius);
+  border:1px solid var(--border);
+  background: rgba(0,0,0,.16);
+}
+.problem .eq{opacity:.7}
+.problem .box input{
+  width: clamp(140px, 26vw, 220px);
+  font-size: 0.9em;
+  padding: 14px 12px;
+  border-radius: 18px;
+  border:1px solid var(--border);
+  background: rgba(0,0,0,.20);
+  color: var(--text);
+  text-align:center;
+  outline:none;
+}
+.feedback{
+  min-height: 32px;
+  text-align:center;
+  color: var(--muted);
+  font-weight:1100;
+  font-size: clamp(18px, 2.6vw, 24px);
+}
+
+/* Actions layout */
+.actions{display:flex; gap:12px; flex-wrap:wrap; margin-top:6px}
+.actions-big{gap:14px}
+
+/* Scores cards */
+.scores-list{display:grid; gap:12px; margin-top:6px}
+.score-card{
+  border:1px solid var(--border);
+  border-radius: 18px;
+  background: rgba(0,0,0,.14);
+  padding: 14px;
+}
+.score-top{display:flex; justify-content:space-between; gap:12px; align-items:flex-start}
+.score-date{color:var(--muted); font-weight:1000; font-size: clamp(12px, 2vw, 14px)}
+.score-mode{font-weight:1100; font-size: clamp(18px, 2.6vw, 22px)}
+.score-grid{margin-top:10px; display:grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap:10px}
+@media (max-width: 520px){
+  .score-grid{grid-template-columns: repeat(2, minmax(0,1fr))}
+}
+.score-pill{
+  border:1px solid var(--border);
+  border-radius: 16px;
+  padding: 12px 10px;
+  text-align:center;
+  background: rgba(0,0,0,.10);
+  font-weight:1100;
+}
+.score-pill .k{display:block; color:var(--muted); font-size: clamp(11px, 1.8vw, 13px); font-weight:1000}
+.score-pill .v{display:block; font-size: clamp(18px, 2.6vw, 22px)}
+
+/* Results */
+.summary{
+  display:grid;
+  grid-template-columns: repeat(3, minmax(0,1fr));
+  gap:12px;
+}
+@media (max-width: 720px){
+  .summary{grid-template-columns:1fr}
+}
+.metric{
+  border:1px solid var(--border);
+  border-radius: var(--radius);
+  background: rgba(0,0,0,.14);
+  padding: 14px;
+}
+.metric-label{color: var(--muted); font-size: clamp(12px, 2vw, 14px); font-weight:1100}
+.metric-value{font-size: clamp(34px, 5vw, 52px); font-weight:1100; margin-top:6px}
+
+.details{
+  margin-top: 6px;
+  border:1px solid var(--border);
+  border-radius: var(--radius);
+  background: rgba(0,0,0,.12);
+  padding: 12px 14px;
+}
+.details summary{cursor:pointer; font-weight:1100; color: var(--text); font-size: clamp(16px, 2.4vw, 20px)}
+.details-compact{margin-top:10px}
+.review{margin-top:10px; display:grid; gap:10px}
+.review .item{
+  display:flex; justify-content:space-between; gap:10px;
+  padding: 12px 14px;
+  border:1px solid var(--border);
+  border-radius: 18px;
+  background: rgba(0,0,0,.14);
+  font-family: var(--mono);
+  font-size: clamp(14px, 2.2vw, 18px);
+}
+.review .item .right{opacity:.9; white-space:nowrap}
+.review .item.ok{border-color: rgba(120,255,180,.25)}
+.review .item.err{border-color: rgba(255,120,120,.25)}
+
+.muted{color: var(--muted)}
+
+/* Bottom nav: bigger, uses width */
+.bottom-nav{
+  position: fixed;
+  left:0; right:0; bottom:0;
+  height: calc(var(--navH) + env(safe-area-inset-bottom));
+  padding: 12px 12px calc(12px + env(safe-area-inset-bottom)) 12px;
+  display:grid;
+  grid-template-columns: repeat(4, minmax(0,1fr));
+  gap:12px;
+  background: rgba(15,26,49,.96);
+  border-top: 1px solid var(--border);
+  backdrop-filter: blur(10px);
+}
+.nav-btn{
+  border:1px solid var(--border);
+  border-radius: 20px;
+  background: rgba(0,0,0,.16);
+  color: var(--muted);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:6px;
+  font-weight:1100;
+  touch-action: manipulation;
+}
+.nav-btn.active{
+  color: var(--text);
+  background: rgba(11,92,255,.20);
+  border-color: rgba(11,92,255,.35);
+}
+.nav-ico{font-size: var(--ico); line-height:1}
+.nav-txt{font-size: clamp(12px, 1.9vw, 14px)}
+
+/* Modal bottom sheet */
+.modal{position:fixed; inset:0; display:none; z-index: 5000}
+.modal.open{display:block}
+.modal-backdrop{position:absolute; inset:0; background: rgba(0,0,0,.55)}
+.modal-sheet{
+  position:absolute;
+  left:0; right:0; bottom:0;
+  background: rgba(15,26,49,.98);
+  border:1px solid var(--border);
+  border-bottom:0;
+  border-top-left-radius: 24px;
+  border-top-right-radius: 24px;
+  box-shadow: var(--shadow);
+  max-height: calc(86vh + env(safe-area-inset-bottom));
+  overflow:auto;
+}
+.modal-header{
+  position:sticky; top:0;
+  display:flex; align-items:center; justify-content:space-between;
+  padding: 14px;
+  background: rgba(15,26,49,.98);
+  border-bottom:1px solid var(--border);
+}
+.modal-body{padding: 14px; display:grid; gap:12px}
+.modal-footer{
+  position:sticky; bottom:0;
+  padding: 14px;
+  background: rgba(15,26,49,.98);
+  border-top:1px solid var(--border);
+}
+.subgrid{display:grid; gap:12px; margin-top:10px}
+
+.version-tag{display:inline-block;margin-left:8px;padding:2px 8px;border-radius:999px;border:1px solid rgba(255,255,255,.18);font-size:12px;color:rgba(255,255,255,.75);background:rgba(0,0,0,.18)}
+
+
+/* V17: allow scrolling inside scores and corrections */
+.card.card-grow{
+  display:flex;
+  flex-direction:column;
+  min-height:0; /* critical so children can scroll */
+}
+
+/* Scores list should scroll inside the card */
+#screen-scores .scores-list{
+  flex:1 1 auto;
+  min-height:0;
+  overflow:auto;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 12px;
+}
+
+/* Results review should scroll when long */
+#screen-results .review{
+  max-height: min(42vh, 360px);
+  overflow:auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Make details content not blow the layout */
+#screen-results details.details{
+  flex: 0 0 auto;
+}
+
+
+/* V18: fix scores scroll - ensure the scores screen/card has a constrained height */
+.app-shell, .app-main{min-height:0;}
+.screen{min-height:0;}
+/* each screen becomes a column flex container so the card can grow */
+.screen{display:flex;flex-direction:column;}
+/* card-grow must actually take remaining height, and hide overflow so inner lists can scroll */
+.card.card-grow{flex:1 1 auto;overflow:hidden;}
+
+/* Scores: list takes remaining space and scrolls */
+#screen-scores .scores-list{
+  flex:1 1 auto;
+  min-height:0;
+  overflow-y:auto;
+  overflow-x:hidden;
+  -webkit-overflow-scrolling:touch;
+}
+
+
+/* V19: scores scroll fix - remove spacer that steals flex space */
+#screen-scores .spacer{flex:0 0 auto;height:0;margin:0;padding:0;display:none !important;}
+/* Ensure reset button stays visible */
+#screen-scores #resetHistoryBtn{flex:0 0 auto;}
+/* Ensure scores list is the only flexible area */
+#screen-scores #scoresList{flex:1 1 auto;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;}
+
+
+/* V20: explicit scrollbox for Scores with visible scrollbar ("ascenseur") */
+#screen-scores .spacer{display:none !important;}
+#screen-scores #scoresList{
+  /* behaves like review list: an explicit scrollbox */
+  max-height: min(52vh, 420px);
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  padding-right: 6px; /* room for scrollbar */
+  scrollbar-gutter: stable;
+  border: 1px solid rgba(255,255,255,.14);
+  border-radius: 16px;
+  background: rgba(0,0,0,.10);
+}
+
+/* WebKit scrollbar styling (Android Chrome) */
+#screen-scores #scoresList::-webkit-scrollbar{ width: 10px; }
+#screen-scores #scoresList::-webkit-scrollbar-track{ background: rgba(255,255,255,.06); border-radius: 999px; }
+#screen-scores #scoresList::-webkit-scrollbar-thumb{ background: rgba(255,255,255,.28); border-radius: 999px; border: 2px solid rgba(0,0,0,.0); }
+
+/* Firefox */
+#screen-scores #scoresList{ scrollbar-width: auto; scrollbar-color: rgba(255,255,255,.30) rgba(255,255,255,.06); }
