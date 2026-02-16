@@ -1,1 +1,1 @@
-// V12: no service worker
+// V13: intentionally no service worker
