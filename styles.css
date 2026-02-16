@@ -6,7 +6,7 @@
   --primary:#0b5cff;
   --primary2:#0a4ad1;
   --danger:#d94a4a;
-  --border:rgba(255,255,255,.10);
+  --border:rgba(255,255,255,.12);
   --shadow: 0 12px 40px rgba(0,0,0,.35);
   --radius:18px;
   --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
@@ -25,7 +25,7 @@ body{
 }
 
 .app-header{
-  padding:18px 18px 6px 18px;
+  padding:14px 14px 6px 14px;
   display:flex;
   align-items:center;
   justify-content:space-between;
@@ -48,107 +48,120 @@ h1{margin:0; font-size:18px}
 .container{
   max-width:980px;
   margin:0 auto;
-  padding:12px 18px 28px 18px;
+  padding:10px 14px 28px 14px;
   display:grid;
-  gap:14px;
+  gap:12px;
 }
 
 .card{
-  background: rgba(15,26,49,.86);
+  background: rgba(15,26,49,.88);
   border:1px solid var(--border);
   border-radius: var(--radius);
   box-shadow: var(--shadow);
-  padding:16px;
+  padding:14px;
 }
+h2{margin:0 0 10px 0; font-size:16px}
 
-h2{margin:0 0 12px 0; font-size:16px}
-
-.grid{
-  display:grid;
-  grid-template-columns: repeat(2, minmax(0,1fr));
-  gap:12px;
-}
-@media (max-width: 720px){
-  .grid{grid-template-columns:1fr}
-}
-
-.field label{display:block; font-size:13px; color:var(--text)}
+.field label{display:block; font-size:13px; color:var(--text); font-weight:800}
 .field small{display:block; margin-top:6px; color:var(--muted); font-size:12px}
-.field input[type="number"]{
+
+.row{display:flex; gap:10px; align-items:center}
+
+.input{
   width:100%;
   margin-top:8px;
-  padding:10px 12px;
-  border-radius:12px;
+  padding:12px 12px;
+  border-radius:14px;
   border:1px solid var(--border);
   background: rgba(0,0,0,.20);
   color:var(--text);
   outline:none;
+  font-size:16px; /* évite zoom iOS */
 }
-.field input[type="checkbox"]{transform: translateY(1px)}
+
+.check{
+  display:flex;
+  gap:10px;
+  align-items:center;
+  color: var(--muted);
+  font-weight:800;
+  margin-top:10px;
+}
+.check input{transform: scale(1.1)}
 
 .segmented{
-  margin-top:8px;
+  margin-top:10px;
   display:flex;
   border:1px solid var(--border);
   background: rgba(0,0,0,.18);
-  border-radius: 12px;
+  border-radius: 16px;
   overflow:hidden;
 }
 .seg{
   flex:1;
-  padding:10px 10px;
+  padding:12px 10px;
   background: transparent;
   border:0;
   color: var(--muted);
   cursor:pointer;
-  font-weight:600;
+  font-weight:900;
+  font-size:16px;
 }
 .seg.active{
   background: rgba(11,92,255,.25);
   color: var(--text);
 }
+.segmented-big .seg{padding:14px 10px; font-size:18px}
 
 .actions{display:flex; gap:10px; flex-wrap:wrap; margin-top:12px}
+.actions-big{gap:12px}
+.row-between{display:flex; align-items:flex-start; justify-content:space-between; gap:12px}
+.row-tight{margin-top:8px}
+.pill{
+  border:1px solid var(--border);
+  border-radius:999px;
+  padding:8px 12px;
+  color: var(--muted);
+  font-weight:900;
+  font-size:13px;
+  background: rgba(0,0,0,.14);
+}
+.pill-mono{font-family: var(--mono);}
 
 .btn{
   border:1px solid var(--border);
-  border-radius: 14px;
-  padding:10px 14px;
-  font-weight:700;
+  border-radius: 16px;
+  padding:12px 14px;
+  font-weight:900;
   cursor:pointer;
   background: rgba(0,0,0,.18);
   color: var(--text);
+  font-size:16px;
 }
 .btn-primary{
   background: linear-gradient(135deg, var(--primary), var(--primary2));
   border-color: rgba(11,92,255,.45);
 }
 .btn-danger{
-  background: rgba(217,74,74,.18);
-  border-color: rgba(217,74,74,.35);
+  background: rgba(217,74,74,.20);
+  border-color: rgba(217,74,74,.40);
 }
 .btn-ghost{background: rgba(0,0,0,.10); color: var(--muted)}
 .btn:active{transform: translateY(1px)}
+.btn-xl{padding:14px 16px; font-size:18px; width:100%}
+.btn-icon{width:48px; height:48px; padding:0; display:grid; place-items:center; border-radius:14px}
 
-.row-between{display:flex; align-items:flex-start; justify-content:space-between; gap:12px}
-.pill{
-  border:1px solid var(--border);
-  border-radius:999px;
-  padding:8px 12px;
-  color: var(--muted);
-  font-weight:700;
-  font-size:13px;
-  background: rgba(0,0,0,.14);
-}
+.card-home .home-actions{display:grid; gap:10px; margin-top:10px}
+.card-home #startBtn{margin-top:6px}
 
 .problem{
-  margin-top:10px;
+  margin-top:12px;
   display:flex;
   align-items:center;
   justify-content:center;
   gap:10px;
   font-family: var(--mono);
-  font-size: clamp(28px, 5vw, 44px);
+  font-size: clamp(34px, 8vw, 54px);
   padding: 18px 10px;
   border-radius: var(--radius);
   border:1px solid var(--border);
@@ -156,10 +169,10 @@ h2{margin:0 0 12px 0; font-size:16px}
 }
 .problem .eq{opacity:.7}
 .problem .box input{
-  width: 120px;
-  font-size: 0.85em;
-  padding: 10px 10px;
-  border-radius: 14px;
+  width: 140px;
+  font-size: 0.9em;
+  padding: 12px 10px;
+  border-radius: 16px;
   border:1px solid var(--border);
   background: rgba(0,0,0,.20);
   color: var(--text);
@@ -167,11 +180,12 @@ h2{margin:0 0 12px 0; font-size:16px}
   outline:none;
 }
 .feedback{
-  min-height: 24px;
+  min-height: 26px;
   margin-top: 10px;
   text-align:center;
   color: var(--muted);
-  font-weight:700;
+  font-weight:900;
+  font-size:16px;
 }
 
 .summary{
@@ -182,14 +196,15 @@ h2{margin:0 0 12px 0; font-size:16px}
 @media (max-width: 720px){
   .summary{grid-template-columns:1fr}
 }
+
 .metric{
   border:1px solid var(--border);
   border-radius: var(--radius);
   background: rgba(0,0,0,.14);
   padding:12px;
 }
-.metric-label{color: var(--muted); font-size:12px; font-weight:700}
-.metric-value{font-size:26px; font-weight:900; margin-top:6px}
+.metric-label{color: var(--muted); font-size:12px; font-weight:900}
+.metric-value{font-size:30px; font-weight:1000; margin-top:6px}
 
 .details{
   margin-top:12px;
@@ -198,30 +213,64 @@ h2{margin:0 0 12px 0; font-size:16px}
   background: rgba(0,0,0,.12);
   padding:10px 12px;
 }
-.details summary{cursor:pointer; font-weight:800; color: var(--text)}
-.review{margin-top:10px; display:grid; gap:6px}
+.details summary{cursor:pointer; font-weight:1000; color: var(--text)}
+.details-compact{margin-top:10px}
+.review{margin-top:10px; display:grid; gap:8px}
 .review .item{
   display:flex; justify-content:space-between; gap:10px;
   padding:10px 12px;
   border:1px solid var(--border);
-  border-radius: 14px;
+  border-radius: 16px;
   background: rgba(0,0,0,.14);
   font-family: var(--mono);
+  font-size:14px;
 }
 .review .item .right{opacity:.9; white-space:nowrap}
-.review .item.ok{border-color: rgba(120,255,180,.22)}
-.review .item.err{border-color: rgba(255,120,120,.22)}
+.review .item.ok{border-color: rgba(120,255,180,.25)}
+.review .item.err{border-color: rgba(255,120,120,.25)}
 
 .table-wrap{overflow:auto; border-radius: var(--radius); border:1px solid var(--border)}
-.table{width:100%; border-collapse:collapse; min-width: 720px; background: rgba(0,0,0,.12)}
+.table{width:100%; border-collapse:collapse; min-width: 740px; background: rgba(0,0,0,.12)}
 .table th, .table td{
   padding:10px 12px;
   border-bottom:1px solid var(--border);
   color: var(--text);
   font-size:13px;
 }
-.table th{color: var(--muted); text-align:left; font-weight:800}
+.table th{color: var(--muted); text-align:left; font-weight:1000}
 .table tbody tr:hover{background: rgba(255,255,255,.03)}
 
 .muted{color: var(--muted)}
 .footer{padding:4px 2px; text-align:center; font-size:12px}
+
+/* Modal */
+.modal{position:fixed; inset:0; display:none}
+.modal.open{display:block}
+.modal-backdrop{position:absolute; inset:0; background: rgba(0,0,0,.55)}
+.modal-sheet{
+  position:absolute;
+  left:0; right:0; bottom:0;
+  background: rgba(15,26,49,.98);
+  border:1px solid var(--border);
+  border-bottom:0;
+  border-top-left-radius: 22px;
+  border-top-right-radius: 22px;
+  box-shadow: var(--shadow);
+  max-height: 86vh;
+  overflow:auto;
+}
+.modal-header{
+  position:sticky; top:0;
+  display:flex; align-items:center; justify-content:space-between;
+  padding:14px;
+  background: rgba(15,26,49,.98);
+  border-bottom:1px solid var(--border);
+}
+.modal-body{padding:14px; display:grid; gap:10px}
+.modal-footer{
+  position:sticky; bottom:0;
+  padding:14px;
+  background: rgba(15,26,49,.98);
+  border-top:1px solid var(--border);
+}
+.subgrid{display:grid; gap:10px; margin-top:10px}

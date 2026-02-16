@@ -18,54 +18,47 @@
       <div class="logo" aria-hidden="true">±</div>
       <div>
         <h1>Math Trainer</h1>
-        <p class="subtitle">Additions & soustractions — 10 questions</p>
+        <p class="subtitle">Additions & soustractions</p>
       </div>
     </div>
     <button id="installBtn" class="btn btn-ghost" hidden>Installer</button>
   </header>
 
   <main class="container">
-    <!-- Écran: Accueil / Paramètres -->
-    <section id="screen-home" class="card">
-      <h2>Nouvelle partie</h2>
-
-      <div class="grid">
+    <!-- Accueil -->
+    <section id="screen-home" class="card card-home">
+      <div class="home-top">
         <div class="field">
-          <label>Mode</label>
-          <div class="segmented" role="group" aria-label="Mode">
-            <button type="button" class="seg active" data-mode="mix">Mix</button>
-            <button type="button" class="seg" data-mode="add">Addition</button>
-            <button type="button" class="seg" data-mode="sub">Soustraction</button>
+          <label for="profileSelect">Qui joue ?</label>
+          <div class="row">
+            <select id="profileSelect" class="input">
+              <!-- JS -->
+            </select>
+            <button type="button" id="addProfileBtn" class="btn btn-ghost btn-icon" aria-label="Ajouter un profil">＋</button>
           </div>
         </div>
 
         <div class="field">
-          <label for="maxValue">Niveau (0 → max)</label>
-          <input id="maxValue" type="number" min="5" max="200" step="1" value="20" />
-          <small>Ex: max = 20 ⇒ opérations entre 0 et 20</small>
+          <label>Choisis ton jeu</label>
+          <div class="segmented segmented-big" role="group" aria-label="Mode">
+            <button type="button" class="seg active" data-mode="mix">Mix</button>
+            <button type="button" class="seg" data-mode="add">+</button>
+            <button type="button" class="seg" data-mode="sub">−</button>
+            <button type="button" class="seg" data-mode="tables">Tables</button>
+          </div>
+          <small id="modeHint">Mix = additions et soustractions</small>
         </div>
 
-        <div class="field">
-          <label for="allowNegative">
-            <input id="allowNegative" type="checkbox" />
-            Autoriser des résultats négatifs (soustraction)
-          </label>
-          <small>Sinon, on génère des soustractions avec résultat ≥ 0</small>
-        </div>
+        <button id="startBtn" class="btn btn-primary btn-xl">▶️ Démarrer (10 questions)</button>
 
-        <div class="field">
-          <label for="questionsCount">Nombre de questions</label>
-          <input id="questionsCount" type="number" min="5" max="50" step="1" value="10" />
+        <div class="home-actions">
+          <button id="openSettingsBtn" class="btn btn-ghost btn-xl">⚙️ Réglages</button>
+          <button id="resetHistoryBtn" class="btn btn-ghost btn-xl">🧽 Effacer les scores</button>
         </div>
-      </div>
-
-      <div class="actions">
-        <button id="startBtn" class="btn btn-primary">Lancer la partie</button>
-        <button id="resetHistoryBtn" class="btn btn-ghost">Effacer l’historique</button>
       </div>
     </section>
 
-    <!-- Écran: Jeu -->
+    <!-- Jeu -->
     <section id="screen-game" class="card" hidden>
       <div class="row-between">
         <div>
@@ -75,6 +68,11 @@
         <div class="pill">
           ✅ <span id="okCount">0</span> &nbsp;|&nbsp; ❌ <span id="errCount">0</span>
         </div>
+      </div>
+
+      <div class="row-between row-tight">
+        <div class="pill pill-mono">⏱️ <span id="timer">00:00</span></div>
+        <div class="pill pill-mono">⏱️ <span id="avgPerQ">0.0</span> s/question</div>
       </div>
 
       <div class="problem" aria-live="polite">
@@ -89,14 +87,14 @@
 
       <div class="feedback" id="feedback" aria-live="polite"></div>
 
-      <div class="actions">
-        <button id="validateBtn" class="btn btn-primary">Valider</button>
-        <button id="skipBtn" class="btn btn-ghost">Passer</button>
-        <button id="stopBtn" class="btn btn-danger">Arrêter</button>
+      <div class="actions actions-big">
+        <button id="validateBtn" class="btn btn-primary btn-xl">✅ Valider</button>
+        <button id="skipBtn" class="btn btn-ghost btn-xl">⏭️ Passer</button>
+        <button id="stopBtn" class="btn btn-danger btn-xl">⏹️ Stop</button>
       </div>
     </section>
 
-    <!-- Écran: Résultats -->
+    <!-- Résultats -->
     <section id="screen-results" class="card" hidden>
       <h2>Résultat</h2>
 
@@ -115,22 +113,24 @@
         </div>
       </div>
 
+      <p id="timeSummary" class="muted" style="margin-top:10px;"></p>
+
       <details class="details">
-        <summary>Voir le corrigé (questions + bonnes réponses)</summary>
+        <summary>Voir le corrigé</summary>
         <div id="reviewList" class="review"></div>
       </details>
 
-      <div class="actions">
-        <button id="playAgainBtn" class="btn btn-primary">Rejouer</button>
-        <button id="backHomeBtn" class="btn btn-ghost">Retour accueil</button>
+      <div class="actions actions-big">
+        <button id="playAgainBtn" class="btn btn-primary btn-xl">🔁 Rejouer</button>
+        <button id="backHomeBtn" class="btn btn-ghost btn-xl">🏠 Accueil</button>
       </div>
     </section>
 
     <!-- Historique -->
     <section class="card">
       <div class="row-between">
-        <h2>Derniers résultats</h2>
-        <span class="muted" id="historyHint">Stocké sur cet appareil</span>
+        <h2>Derniers scores</h2>
+        <span class="muted" id="historyHint">Sur cet appareil</span>
       </div>
 
       <div class="table-wrap">
@@ -140,7 +140,7 @@
               <th>Date</th>
               <th>Mode</th>
               <th>Niveau</th>
-              <th>Questions</th>
+              <th>Q</th>
               <th>✅</th>
               <th>❌</th>
               <th>Score</th>
@@ -152,9 +152,105 @@
     </section>
 
     <footer class="footer muted">
-      Offline OK ✅ — Installe l’app via le bouton “Installer” si ton navigateur le propose.
+      Astuce : installe l’app pour l’utiliser hors-ligne.
     </footer>
   </main>
+
+  <!-- Modal Réglages -->
+  <div id="settingsModal" class="modal" aria-hidden="true" role="dialog" aria-label="Réglages">
+    <div class="modal-backdrop" data-close></div>
+    <div class="modal-sheet" role="document">
+      <div class="modal-header">
+        <h2 style="margin:0;">Réglages</h2>
+        <button class="btn btn-ghost btn-icon" id="closeSettingsBtn" aria-label="Fermer">✕</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="field">
+          <label for="questionsCount">Nombre de questions</label>
+          <input id="questionsCount" class="input" type="number" min="5" max="50" step="1" value="10" />
+        </div>
+
+        <div class="field">
+          <label for="maxValue">Niveau (0 → max)</label>
+          <input id="maxValue" class="input" type="number" min="5" max="200" step="1" value="20" />
+          <small>Si “Progression” est activée, ce max est plafonné au niveau débloqué.</small>
+        </div>
+
+        <div class="field">
+          <label class="check">
+            <input id="allowNegative" type="checkbox" />
+            Autoriser des résultats négatifs (soustraction)
+          </label>
+        </div>
+
+        <details class="details details-compact">
+          <summary>Tables</summary>
+          <div class="subgrid">
+            <label class="check">
+              <input id="tablesEnabled" type="checkbox" />
+              Activer le mode tables
+            </label>
+
+            <div class="field">
+              <label for="tableNumber">Table</label>
+              <input id="tableNumber" class="input" type="number" min="1" max="20" step="1" value="7" />
+            </div>
+
+            <div class="field">
+              <label for="tablesOp">Opération</label>
+              <select id="tablesOp" class="input">
+                <option value="add">Addition</option>
+                <option value="sub">Soustraction</option>
+              </select>
+            </div>
+          </div>
+        </details>
+
+        <details class="details details-compact">
+          <summary>Progression</summary>
+          <div class="subgrid">
+            <label class="check">
+              <input id="progressEnabled" type="checkbox" checked />
+              Activer la progression
+            </label>
+
+            <div class="pill pill-mono">
+              Niveau max débloqué : <span id="unlockedMax">10</span>
+            </div>
+
+            <button type="button" id="resetProgressBtn" class="btn btn-ghost btn-xl">Réinitialiser la progression</button>
+          </div>
+        </details>
+
+        <details class="details details-compact">
+          <summary>Effets</summary>
+          <div class="subgrid">
+            <label class="check">
+              <input id="soundEnabled" type="checkbox" checked />
+              Sons
+            </label>
+            <label class="check">
+              <input id="confettiEnabled" type="checkbox" checked />
+              Confettis
+            </label>
+          </div>
+        </details>
+
+        <details class="details details-compact">
+          <summary>Gestion des profils</summary>
+          <div class="subgrid">
+            <button type="button" id="renameProfileBtn" class="btn btn-ghost btn-xl">Renommer le profil</button>
+            <button type="button" id="deleteProfileBtn" class="btn btn-danger btn-xl">Supprimer le profil</button>
+          </div>
+        </details>
+      </div>
+
+      <div class="modal-footer">
+        <button id="saveSettingsBtn" class="btn btn-primary btn-xl">OK</button>
+      </div>
+    </div>
+  </div>
 
   <script src="app.js"></script>
 </body>
