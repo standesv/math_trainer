@@ -107,8 +107,8 @@ if ("serviceWorker" in navigator) {
 }
 
 // ---------- Storage ----------
-const PROFILES_KEY = "math_trainer_profiles_v8";
-const ACTIVE_PROFILE_KEY = "math_trainer_active_profile_v8";
+const PROFILES_KEY = "math_trainer_profiles_v9";
+const ACTIVE_PROFILE_KEY = "math_trainer_active_profile_v9";
 const HISTORY_MAX = 12;
 
 const LEVEL_STEP = 10;
@@ -116,8 +116,8 @@ const LEVEL_MAX_CAP = 200;
 const PASS_SCORE_MIN = 80;
 const PASS_MIN_QUESTIONS = 10;
 
-function historyKeyFor(profile) { return `math_trainer_history_v8::${profile}`; }
-function progressKeyFor(profile) { return `math_trainer_progress_v8::${profile}`; }
+function historyKeyFor(profile) { return `math_trainer_history_v9::${profile}`; }
+function progressKeyFor(profile) { return `math_trainer_progress_v9::${profile}`; }
 
 // ---------- Helpers ----------
 function clampInt(v, min, max) {
@@ -482,6 +482,14 @@ function generateQuestionTables() {
   return { a, b, op: "−", answer: a - b, userAnswer: null, correct: null, skipped: false, table: t };
 }
 
+// ---------- Safe helpers (avoid freezes if audio/confetti fails) ----------
+function safeCall(fn) {
+  try { fn(); } catch (e) { /* ignore */ }
+}
+function scheduleAfterAnswer(ms, fn) {
+  try { return setTimeout(fn, ms); } catch (e) { /* ignore */ }
+}
+
 // ---------- Game state ----------
 let state = {
   currentIndex: 0,
@@ -547,20 +555,19 @@ function validateAnswer() {
   const correct = (user === expected);
   state.current.correct = correct;
 
+  // Effects must never prevent navigation to next screen
   if (correct) {
     state.ok += 1;
     els.feedback.textContent = "✅ Bravo !";
-    soundCorrect();
-    spawnConfetti({ count: 26, x: window.innerWidth / 2, y: window.innerHeight / 2, spread: 120, power: 8 });
+    safeCall(() => soundCorrect());
+    safeCall(() => spawnConfetti({ count: 26, x: window.innerWidth / 2, y: window.innerHeight / 2, spread: 120, power: 8 }));
   } else {
     els.feedback.textContent = `❌ C’était ${expected}`;
-    soundWrong();
+    safeCall(() => soundWrong());
   }
-  if (state.currentIndex === config.totalQuestions - 1) {
-    setTimeout(finishGame, 600);
-  } else {
-    setTimeout(nextQuestion, 520);
-  }
+
+  const isLast = (state.currentIndex === config.totalQuestions - 1);
+  scheduleAfterAnswer(isLast ? 650 : 520, isLast ? finishGame : nextQuestion);
 }
 
 function skipQuestion() {
@@ -570,12 +577,10 @@ function skipQuestion() {
   state.current.userAnswer = null;
   state.current.correct = false;
   els.feedback.textContent = `⏭️ Réponse : ${state.current.answer}`;
-  soundWrong();
-  if (state.currentIndex === config.totalQuestions - 1) {
-    setTimeout(finishGame, 500);
-  } else {
-    setTimeout(nextQuestion, 420);
-  }
+  safeCall(() => soundWrong());
+
+  const isLast = (state.currentIndex === config.totalQuestions - 1);
+  scheduleAfterAnswer(isLast ? 520 : 420, isLast ? finishGame : nextQuestion);
 }
 
 function stopGameNow() {
