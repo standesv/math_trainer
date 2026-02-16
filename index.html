@@ -10,7 +10,7 @@
   <meta name="description" content="Entraînement additions et soustractions - enfant - profils - progression" />
 
   <link rel="manifest" href="manifest.webmanifest" />
-  <link rel="stylesheet" href="styles.v14.css" />
+  <link rel="stylesheet" href="styles.v15.css" />
 
   <title>Math Trainer</title>
 </head>
@@ -22,7 +22,7 @@
         <div class="logo" aria-hidden="true">±</div>
         <div class="titles">
           <h1>Math Trainer</h1>
-          <p class="subtitle" id="subtitle">Additions & soustractions <span id="versionTag" class="version-tag">V14</span></p>
+          <p class="subtitle" id="subtitle">Additions & soustractions <span id="versionTag" class="version-tag">V15</span></p>
         </div>
       </div>
       <button id="installBtn" class="btn btn-ghost" hidden>Installer</button>
@@ -258,6 +258,35 @@
     </div>
   </div>
 
-  <script src="app.v14.js"></script>
+  <script>
+  // V15: ultra-robust routing (works even if some listeners fail)
+  (function(){
+    function routeTo(name){
+      try{ location.hash = name ? ('#'+name) : '#home'; }catch(e){}
+      // If app router exists, call it
+      try{
+        if (typeof window.showScreen === 'function') window.showScreen(name);
+      }catch(e){}
+    }
+    window.__routeTo = routeTo;
+
+    // Delegated click (captures taps even if element gets re-rendered)
+    document.addEventListener('click', function(e){
+      var b = e.target && e.target.closest ? e.target.closest('.nav-btn') : null;
+      if(!b) return;
+      if (b.id === 'navScores') { e.preventDefault(); routeTo('scores'); }
+      if (b.id === 'navHome') { e.preventDefault(); routeTo('home'); }
+      if (b.id === 'navPlay') { e.preventDefault(); routeTo('game'); }
+      if (b.id === 'navSettings') { /* leave to app */ }
+    }, true);
+
+    window.addEventListener('hashchange', function(){
+      var h = (location.hash||'#home').replace('#','');
+      try{ if (typeof window.showScreen === 'function') window.showScreen(h); }catch(e){}
+    });
+  })();
+  </script>
+
+  <script src="app.v15.js"></script>
 </body>
 </html>
